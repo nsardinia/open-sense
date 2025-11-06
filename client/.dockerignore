@@ -1,0 +1,13 @@
+README.md
+
+# Git
+.gitignore
+
+# Binaries
+node_modules
+*/*/node_modules
+
+# Builds
+*/*/build
+*/*/dist
+*/*/script.js
