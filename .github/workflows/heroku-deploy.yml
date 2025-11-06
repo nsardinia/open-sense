@@ -17,6 +17,20 @@ jobs:
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
           heroku --version
+
+
+      - name: Ensure Heroku uses container stack
+        env:
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+        run: |
+          current_stack=$(heroku stack --app "$HEROKU_APP_NAME" | grep '*')
+          echo "Current Heroku stack: $current_stack"
+          if ! echo "$current_stack" | grep -q "container"; then
+            echo "Switching to container stack..."
+            heroku stack:set container --app "$HEROKU_APP_NAME"
+          else
+            echo "App is already using the container stack."
+          fi
           
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.14
