@@ -12,6 +12,7 @@
   "dependencies": {
     "@maptiler/sdk": "^3.8.0",
     "d3": "^7.9.0",
+    "firebase": "^12.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
