@@ -1,0 +1,5 @@
+build:
+  docker:
+    web: client/Dockerfile
+run:
+  web: serve dist
