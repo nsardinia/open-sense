@@ -6,11 +6,18 @@ const MAPTILER_KEY = "o1YucdjzVonMBIYtE4G5";
 
 // mock data
 const sensors = [
-  { lng: -82.349, lat: 29.646, intensity: 0.8 }, // SW Rec
-  { lng: -82.324, lat: 29.651, intensity: 0.5 }, // Downtown
-  { lng: -82.336, lat: 29.648, intensity: 0.3 }, // Midtown
-  { lng: -82.304, lat: 29.653, intensity: 0.6 }, // East Campus
-  { lng: -82.341, lat: 29.644, intensity: 0.9 }, // UF South
+  // { lng: -82.349, lat: 29.646, intensity: 0.8 }, // SW Rec
+  // { lng: -82.324, lat: 29.651, intensity: 0.5 }, // Downtown
+  // { lng: -82.336, lat: 29.648, intensity: 0.3 }, // Midtown
+  // { lng: -82.304, lat: 29.653, intensity: 0.6 }, // East Campus
+  // { lng: -82.341, lat: 29.644, intensity: 0.9 }, // UF South
+
+  // FOR DEMO ONLY 
+  { lng: -82.343939, lat: 29.647993, intensity: 0.6 }, // Marston Basement type
+  { lng: -82.344561, lat: 29.648378, intensity: 1.5 }, // Dungeon
+  { lng: -82.347768, lat: 29.644067, intensity: 0.2 }, // Malachowsky
+  { lng: -82.348868, lat: 29.649853, intensity: 1 }, // The Swamp
+
 ];
 
 function normalize(value, min, max) {
@@ -70,9 +77,9 @@ export default function Heatmap({ sensorData }) {
             ["heatmap-density"],
             0, "rgba(33,102,172,0)",
             0.2, "rgb(103,169,207)",
-            0.4, "rgb(209,229,240)",
-            0.6, "rgb(253,219,199)",
-            0.8, "rgb(239,138,98)",
+            0.4, "rgba(77, 15, 248, 1)",
+            0.6, "rgba(237, 102, 24, 1)",
+            0.8, "rgba(241, 95, 37, 1)",
             1, "rgb(178,24,43)"
           ],
         },
