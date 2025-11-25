@@ -1,43 +1,21 @@
-// import Heatmap from "./components/heatmap";
-// import LatestFeed from "./components/latestFeed";
-// import "./styles/styles.css";
-
-// function App() {
-//   return (
-//     <div className="dashboard-container">
-//       <LatestFeed />
-//       <Heatmap />
-//       <div className="dashboard-title">OpenSense Dashboard</div>
-//     </div>
-//   );
-// }
-
-// export default App;
-
-import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
-import { db } from "./firebaseConfig";
-import Heatmap from "./components/heatmap";
-import "./styles/styles.css";
+import { Routes, Route } from "react-router-dom";
+import LandingPage from "./pages/home.jsx";
+import DashboardPage from "./pages/dashboard.jsx";
+// import any other pages to create (like About, Docs, etc.)
 
 function App() {
-  const [sensorData, setSensorData] = useState(null);
-
-  useEffect(() => {
-    const latestRef = ref(db, "latest");
-    const unsubscribe = onValue(latestRef, (snapshot) => {
-      const val = snapshot.val();
-      console.log("Received data:", val);
-      setSensorData(val);
-    });
-    return () => unsubscribe();
-  }, []);
-
+  // App no longer holds dashboard state/logic, just the router
   return (
-    <div className="dashboard-container">
-      <Heatmap sensorData={sensorData} />
-      <div className="dashboard-title">OpenSense Dashboard</div>
-    </div>
+    <Routes>
+      <Route path="/" element={<LandingPage />} /> 
+      <Route path="/dashboard" element={<DashboardPage />} /> 
+
+      <Route path="/about" element={<div>About Page Content</div>} />
+      <Route path="/docs" element={<div>Documentation Page Content</div>} />
+      <Route path="/community" element={<div>Community Page Content</div>} />
+      <Route path="/contribute" element={<div>Contribute Page Content</div>} />
+      <Route path="/event" element={<div>Event Page Content</div>} />
+    </Routes>
   );
 }
 
