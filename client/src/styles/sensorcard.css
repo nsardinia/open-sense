@@ -1,0 +1,63 @@
+.sensor-card {
+  background: rgba(26, 188, 156, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  display: flex;
+  flex-direction: column;
+  padding: 18px 22px;
+  border-radius: 20px;
+  min-width: 240px;
+  max-width: 280px;
+
+  font-family: "Inter", sans-serif;
+  border: 1px solid rgba(26, 188, 156, 0.4);
+  box-shadow: 0 12px 30px rgba(26, 188, 156, 0.15);
+}
+
+.sensor-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1abc9c;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.sensor-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sensor-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+
+}
+
+
+.sensor-row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  color: #000000;
+}
+
+.value {
+  font-weight: 1000;
+  letter-spacing: 0.04em;
+}
+
+.maplibregl-popup-content {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.maplibregl-popup-tip {
+  display: none !important;
+}

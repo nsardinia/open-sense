@@ -4,6 +4,8 @@ import { db } from "../firebaseConfig"; // Assuming firebaseConfig is in the roo
 import Heatmap from "../components/heatmap";
 import HamburgerNav from '../components/navbar.jsx';
 import "../styles/styles.css";
+import AlertsPanel from "../components/alertspanel";
+import SensorCard from "../components/sensorcard.jsx";
 
 // This is your original dashboard logic
 function DashboardPage() {
@@ -24,6 +26,9 @@ function DashboardPage() {
         <HamburgerNav />
         <Heatmap sensorData={sensorData} />
         <div className="dashboard-title">OpenSense Dashboard</div>
+        
+        <AlertsPanel sensorData={sensorData} />
+        
     </div>
   );
 }
