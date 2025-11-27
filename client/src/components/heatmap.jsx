@@ -1,129 +1,223 @@
-import React, { useEffect, useRef } from "react";
-import * as maptilersdk from "@maptiler/sdk";
-import "@maptiler/sdk/dist/maptiler-sdk.css";
+import React, { useEffect, useRef } from "react"
+import * as maptilersdk from "@maptiler/sdk"
+import "@maptiler/sdk/dist/maptiler-sdk.css"
+import ReactDOM from "react-dom/client"
+import SensorCard from "./sensorcard"
 
-const MAPTILER_KEY = "o1YucdjzVonMBIYtE4G5";
+const MAPTILER_KEY = "o1YucdjzVonMBIYtE4G5"
 
-// mock data
-const sensors = [
-  // { lng: -82.349, lat: 29.646, intensity: 0.8 }, // SW Rec
-  // { lng: -82.324, lat: 29.651, intensity: 0.5 }, // Downtown
-  // { lng: -82.336, lat: 29.648, intensity: 0.3 }, // Midtown
-  // { lng: -82.304, lat: 29.653, intensity: 0.6 }, // East Campus
-  // { lng: -82.341, lat: 29.644, intensity: 0.9 }, // UF South
-
-  // FOR DEMO ONLY 
-  { lng: -82.343939, lat: 29.647993, intensity: 0.6 }, // Marston Basement type
-  { lng: -82.344561, lat: 29.648378, intensity: 1.5 }, // Dungeon
-  { lng: -82.347768, lat: 29.644067, intensity: 0.2 }, // Malachowsky
-  { lng: -82.348868, lat: 29.649853, intensity: 1 }, // The Swamp
-
-];
+// fake demo nodes (same structure as real ones will use)
+const demoNodes = [
+  {
+    id: "marston",
+    lat: 29.647993,
+    lng: -82.343939,
+    readings: {
+      pm: 120,
+      gas: 900,
+      sound: 78,
+      temp: 83,
+      humidity: 55,
+    },
+  },
+  {
+    id: "dungeon",
+    lat: 29.648378,
+    lng: -82.344561,
+    readings: {
+      pm: 190,
+      gas: 1600,
+      sound: 97,
+      temp: 92,
+      humidity: 72,
+    },
+  },
+  {
+    id: "malachowsky",
+    lat: 29.644067,
+    lng: -82.347768,
+    readings: {
+      pm: 75,
+      gas: 500,
+      sound: 62,
+      temp: 79,
+      humidity: 44,
+    },
+  },
+]
 
 function normalize(value, min, max) {
-  if (value == null || isNaN(value)) return 0; // safety check
-  return Math.min(1, Math.max(0, (value - min) / (max - min)));
+  if (value == null || isNaN(value)) return 0 // safety check
+  return Math.min(1, Math.max(0, (value - min) / (max - min)))
+}
+
+// where pm and gas are a little more important in intensity
+function calculateIntensity(readings) {
+  const pmNorm = normalize(readings?.pm, 0, 200)
+  const soundNorm = normalize(readings?.sound, 60, 90)
+  const tempNorm = normalize(readings?.temp, 70, 100)
+  const humidityNorm = normalize(readings?.humidity, 45, 90)
+  const gasNorm = normalize(readings?.gas, 400, 2000)
+
+  return (
+    (2.5 * pmNorm +
+      2.0 * gasNorm +
+      1.25 * soundNorm +
+      0.75 * tempNorm +
+      0.5 * humidityNorm) /
+    7.0
+  )
 }
 
 export default function Heatmap({ sensorData }) {
-  const mapContainer = useRef(null);
-  const map = useRef(null);
+  const mapContainer = useRef(null)
+  const map = useRef(null)
 
-  // normalized readings for each sensor
-  const pmNorm = normalize(sensorData?.pm, 0, 200);
-  const soundNorm = normalize(sensorData?.sound, 60, 90);
-  const tempNorm = normalize(sensorData?.temp, 70, 100);
-  const humidityNorm = normalize(sensorData?.humidity, 45, 90);
-  const gasNorm = normalize(sensorData?.gas, 400, 2000);
+  // converting the single real ESP into a node (same format as fake ones)
+  const liveNode = sensorData
+    ? {
+        id: "live-node",
+        lat: sensorData.latitude,
+        lng: sensorData.longitude,
+        readings: {
+          pm: sensorData.pm,
+          gas: sensorData.gas,
+          sound: sensorData.sound,
+          temp: sensorData.temp,
+          humidity: sensorData.humidity,
+        },
+      }
+    : null
 
-  // where pm and gas are a little more important in intensity
-  const totalIntensity = (2.5 * pmNorm + 2.0 * gasNorm + 1.25 * soundNorm + 0.75 * tempNorm + 0.5 * humidityNorm) / 7.0;
+  // combining fake + real nodes so they all behave the same
+  const nodes = liveNode ? [...demoNodes, liveNode] : demoNodes
 
   useEffect(() => {
-    if (map.current) return; // prevent reinitialization
-    maptilersdk.config.apiKey = MAPTILER_KEY;
+    if (map.current) return // prevent reinitialization
+
+    maptilersdk.config.apiKey = MAPTILER_KEY
 
     map.current = new maptilersdk.Map({
       container: mapContainer.current,
       style: maptilersdk.MapStyle.STREETS,
       center: [-82.3248, 29.6516],
       zoom: 13,
-    });
+    })
 
+    // converting nodes into geojson features for maptiler
     const geojson = {
       type: "FeatureCollection",
-      features: sensors.map((s) => ({
+      features: nodes.map((node) => ({
         type: "Feature",
-        geometry: { type: "Point", coordinates: [s.lng, s.lat] },
-        properties: { intensity: s.intensity },
+        geometry: {
+          type: "Point",
+          coordinates: [node.lng, node.lat],
+        },
+        properties: {
+        id: node.id,
+        intensity: calculateIntensity(node.readings),
+
+        // this is what the popup will use
+        pm: node.readings.pm,
+        gas: node.readings.gas,
+        sound: node.readings.sound,
+        temp: node.readings.temp,
+        humidity: node.readings.humidity,
+        },
       })),
-    };
+    }
 
     map.current.on("load", () => {
-      map.current.addSource("heatmap-source", { type: "geojson", data: geojson });
+      map.current.addSource("heatmap-source", {
+        type: "geojson",
+        data: geojson,
+      })
 
+      // actual heatmap layer
       map.current.addLayer({
         id: "heatmap-layer",
         type: "heatmap",
         source: "heatmap-source",
         maxzoom: 18,
         paint: {
-          "heatmap-weight": ["interpolate", ["linear"], ["get", "intensity"], 0, 0, 1, 1],
+          "heatmap-weight": [
+            "interpolate",
+            ["linear"],
+            ["get", "intensity"],
+            0,
+            0,
+            1,
+            1,
+          ],
           "heatmap-intensity": 1,
           "heatmap-radius": 30,
           "heatmap-color": [
             "interpolate",
             ["linear"],
             ["heatmap-density"],
-            0, "rgba(33,102,172,0)",
-            0.2, "rgb(103,169,207)",
-            0.4, "rgba(77, 15, 248, 1)",
-            0.6, "rgba(237, 102, 24, 1)",
-            0.8, "rgba(241, 95, 37, 1)",
-            1, "rgb(178,24,43)"
+            0,
+            "rgba(33,102,172,0)",
+            0.2,
+            "rgb(103,169,207)",
+            0.4,
+            "rgba(77, 15, 248, 1)",
+            0.6,
+            "rgba(237, 102, 24, 1)",
+            0.8,
+            "rgba(241, 95, 37, 1)",
+            1,
+            "rgb(178,24,43)",
           ],
         },
-      });
-    });
-  }, []);
+      })
 
-// this use-effect heatmap to update live everytime sensor data changes in firebase
-useEffect(() => {
-  if (!map.current || !sensorData) return;
+      // invisible layer just for detecting hover
+      map.current.addLayer({
+        id: "sensor-points",
+        type: "circle",
+        source: "heatmap-source",
+        paint: {
+          "circle-radius": 10,
+          "circle-opacity": 0,
+        },
+      })
 
-  const newPoint = {
-    type: "Feature",
-    geometry: {
-      type: "Point",
-      coordinates: [sensorData.longitude, sensorData.latitude],
-    },
-    properties: { intensity: totalIntensity },
-  };
+      const popup = new maptilersdk.Popup({
+        closeButton: false,
+        closeOnClick: false,
+      })
 
-  const updateHeatmap = () => {
-    const source = map.current.getSource("heatmap-source");
-    if (!source) return;
+      // when someone hovers on a point, show the card
+      map.current.on("mouseenter", "sensor-points", (e) => {
+      map.current.getCanvas().style.cursor = "pointer"
 
-    const existingData = source._data || { type: "FeatureCollection", features: [] }; // need to have existing features
-    const baseFeatures = existingData.features.filter(f => !f.properties.isLive); // remove any previous "live" point so they don't build
-    const updatedData = {  
-      type: "FeatureCollection",
-      features: [
-        ...baseFeatures,
-        { ...newPoint, properties: { ...newPoint.properties, isLive: true } }, // adds the latest reading as a single live point
-      ],
-    };
+      const coordinates = e.features[0].geometry.coordinates.slice()
+      const props = e.features[0].properties
 
-    source.setData(updatedData);
-  };
+      const readings = {
+        pm: Number(props.pm),
+        gas: Number(props.gas),
+        sound: Number(props.sound),
+        temp: Number(props.temp),
+        humidity: Number(props.humidity),
+      }
 
-  if (map.current.isStyleLoaded()) {
-    updateHeatmap();
-  } else {
-    map.current.once("load", updateHeatmap);
-  }
-}, [sensorData, totalIntensity]);
+      const container = document.createElement("div")
+      const root = ReactDOM.createRoot(container)
 
+      console.log("hover readings:", readings) // debugging
+
+      root.render(<SensorCard data={readings} />)
+
+      popup.setLngLat(coordinates).setDOMContent(container).addTo(map.current)
+    })
+
+      map.current.on("mouseleave", "sensor-points", () => {
+        map.current.getCanvas().style.cursor = ""
+        popup.remove()
+      })
+    })
+  }, [sensorData])
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -135,7 +229,8 @@ useEffect(() => {
         }}
       />
 
-      {sensorData && (   // this is the overlay box top left, can maybe make a component
+      {/* overlay panel - just for quick testing + debugging */}
+      {sensorData && (
         <div
           style={{
             position: "absolute",
@@ -152,15 +247,15 @@ useEffect(() => {
           }}
         >
           <h4 style={{ marginBottom: "6px", fontWeight: "600" }}>
-            Latest Sensor Readings
+            latest sensor readings
           </h4>
-          <p>PM: {sensorData.pm ?? "N/A"}</p>
-          <p>Gas: {sensorData.gas ?? "N/A"}</p>
-          <p>Sound: {sensorData.sound ?? "N/A"}</p>
-          <p>Temp: {sensorData.temp ?? "N/A"}</p>
-          <p>Humidity: {sensorData.humidity ?? "N/A"}</p>
+          <p>pm: {sensorData.pm ?? "n/a"}</p>
+          <p>gas: {sensorData.gas ?? "n/a"}</p>
+          <p>sound: {sensorData.sound ?? "n/a"}</p>
+          <p>temp: {sensorData.temp ?? "n/a"}</p>
+          <p>humidity: {sensorData.humidity ?? "n/a"}</p>
         </div>
       )}
     </div>
-  );
+  )
 }
