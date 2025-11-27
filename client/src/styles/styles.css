@@ -20,3 +20,12 @@
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
   z-index: 10;
 }
+
+.open-config-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 5%;
+  margin: 20px;
+  padding: 10px 20px;
+}
+
