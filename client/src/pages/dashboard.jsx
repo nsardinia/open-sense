@@ -23,10 +23,51 @@ function DashboardPage() {
     return () => unsubscribe();
   }, []);
 
-  return (
+  
+  const [demoNodes, setDemoNodes] = useState([
+    {
+      id: "marston",
+      lat: 29.647993,
+      lng: -82.343939,
+      readings: {
+        pm: 120,
+        gas: 900,
+        sound: 78,
+        temp: 83,
+        humidity: 55,
+      },
+    },
+    {
+      id: "dungeon",
+      lat: 29.648378,
+      lng: -82.344561,
+      readings: {
+        pm: 190,
+        gas: 1600,
+        sound: 97,
+        temp: 92,
+        humidity: 72,
+      },
+    },
+    {
+      id: "malachowsky",
+      lat: 29.644067,
+      lng: -82.347768,
+      readings: {
+        pm: 75,
+        gas: 500,
+        sound: 62,
+        temp: 79,
+        humidity: 44,
+      },
+    },
+  ])
+
+
+    return (
     <div className="dashboard-container">
         <HamburgerNav />
-        <Heatmap sensorData={sensorData} />
+        <Heatmap sensorData={sensorData} devices={demoNodes}/>
         <div className="dashboard-title">OpenSense Dashboard</div>
         
         <button onClick={() => setShowConfig(true)} className="open-config-btn"> Configure </button>
@@ -36,7 +77,7 @@ function DashboardPage() {
         {showConfig && (
           <div className="config-overlay" onClick={() => setShowConfig(false)}>
              <div className="config-window" onClick={e => e.stopPropagation()}>
-                <Configurator />
+                <Configurator devices={demoNodes} onDemoNodesChange={(updatedDemoNodes) => setDemoNodes(updatedDemoNodes)}/>
              </div>
           </div>
         )}        
