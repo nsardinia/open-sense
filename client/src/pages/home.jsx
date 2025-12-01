@@ -31,7 +31,7 @@ return (
             Join the global network of environmental sensors. Build, deploy, and contribute to open-source IoT monitoring that spans from cities to the most remote corners of the earth.
             </p>
             <div className="hero-buttons">
-            <a href="/docs" className="btn btn-primary">Get Started</a>
+            <a href="/dashboard" className="btn btn-primary">Get Started</a>
             <a href="/about" className="btn btn-secondary">Learn More</a>
             </div>
         </div>
@@ -104,7 +104,7 @@ return (
                     <p className="resource-text">
                     Download our open-source 3D printer files for weather-resistant sensor casings. Designed for durability and easy assembly.
                     </p>
-                    <a href="https://github.com/opensense/casing" className="resource-link">
+                    <a href="https://github.com/nsardinia/open-sensee" className="resource-link">
                     View on GitHub →
                     </a>
                 </div>

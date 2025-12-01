@@ -7,6 +7,7 @@ import "../styles/styles.css";
 import AlertsPanel from "../components/alertspanel";
 import SensorCard from "../components/sensorcard.jsx";
 import Configurator from "../components/configurator.jsx";
+import ToggleAlarm from "../components/togglealarm.jsx";
 
 
 function DashboardPage() {
@@ -109,9 +110,26 @@ function DashboardPage() {
         <Heatmap sensorData={sensorData} devices={demoNodes}/>
         <div className="dashboard-title">OpenSense Dashboard</div>
         
-        <button onClick={() => setShowConfig(true)} className="open-config-btn"> Configure </button>
+        {/* <button className="config-launcher" onClick={() => setShowConfig(true)}>
+          Configure
+        </button> */}
 
         <AlertsPanel sensorData={sensorData} />
+
+        <div className="floating-controls">
+  
+          {/* CONFIG LAUNCHER */}
+          <button 
+            className="floating-btn" 
+            onClick={() => setShowConfig(true)}
+          >
+            Configure
+          </button>
+
+          {/* ALARM TOGGLE */}
+          <ToggleAlarm />
+        </div>
+
 
         {showConfig && (
           <div className="config-overlay" onClick={() => setShowConfig(false)}>
