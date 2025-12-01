@@ -26,6 +26,7 @@
 
 // const char *ssid = "1d-103@Lexington_crossing";
 // const char *password = "597NUUDU5";
+
 const char *ssid = "Iphone 3G";
 const char *password = "password";
 
@@ -36,7 +37,7 @@ FirebaseConfig config;
 
 unsigned long sendDataPrevMillis = 0;
 bool signupOK = false;
-
+bool alarm_state = false;
 // Singleton instance of the radio driver
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
@@ -114,6 +115,7 @@ void setup()
   config.token_status_callback = tokenStatusCallback;
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
+  Serial.println("Setup Done.");
 }
 
 void loop()
@@ -179,7 +181,13 @@ void loop()
           Serial.println();  Serial.println("Temperature sent to Firebase as Float.");
           }
           else Serial.println("Failed" + fbdo.errorReason());
-
+          if (Firebase.RTDB.getBool(&fbdo, "latest/alarm")) {
+              alarm_state = fbdo.boolData();
+              Serial.println();
+              Serial.print("Replying w/ Alarm Status: ");
+              Serial.println(alarm_state);
+          }
+          else Serial.println("Failed" + fbdo.errorReason());
         }
       }
       else{
@@ -195,10 +203,10 @@ void loop()
        Serial.print("RSSI: ");
       Serial.println(rf95.lastRssi(), DEC);
       // Send a reply
-      uint8_t data[] = "And hello back to you";
+      uint8_t data[] = { alarm_state ? '1' : '0' };
       rf95.send(data, sizeof(data));
       rf95.waitPacketSent();
-      Serial.println("Sent a reply");
+      Serial.println("Sent Alarm Status");
       digitalWrite(LED, LOW);
 
       
