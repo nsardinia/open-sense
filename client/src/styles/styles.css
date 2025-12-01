@@ -29,3 +29,11 @@
   padding: 10px 20px;
 }
 
+.toggle-alarm-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 15%;
+  margin: 20px;
+  padding: 10px 20px;
+}
+

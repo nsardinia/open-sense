@@ -3,6 +3,9 @@ import "../../node_modules/react-grid-layout/css/styles.css";
 import { useState, useEffect } from "react";
 import SensorCard from "../components/sensorcard.jsx";
 import GridLayout from "react-grid-layout";
+import axios from 'axios';
+import { ref, set, onValue } from "firebase/database";
+import { db } from "../firebaseConfig"; 
 
 export default function Configurator({ devices, onDemoNodesChange }) {
 
@@ -11,6 +14,57 @@ export default function Configurator({ devices, onDemoNodesChange }) {
   const [deviceLocationLon, setDeviceLocationLon] = useState("");
   const [cards, setCards] = useState([]);
   const [counter, setCounter] = useState(1);
+
+  const [prompt, setPrompt] = useState('');
+  const [response, setResponse] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const toggleAlarm = async () => {
+    const alarmRef = ref(db, "latest/alarm");
+
+    onValue(
+      alarmRef,
+      (snapshot) => {
+        const currentValue = snapshot.val();
+        const newValue = !currentValue; 
+        set(alarmRef, newValue);
+      },
+      {
+        onlyOnce: true,
+      }
+    );
+  }
+
+  const handleAISent = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      console.log(prompt + JSON.stringify(devices));
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4",
+          messages: [
+            { role: "system", content: "You are a helpful assistant. You will provide information and context surrounding the user's environmental data and questions." },
+            { role: "user", content: prompt + JSON.stringify(devices)},
+          ],
+          max_tokens: 200,
+        }),
+      });
+
+      const data = await res.json();
+      setResponse(data.choices[0].message.content);
+    } catch (error) {
+      console.log(error)
+    }
+
+    setLoading(false)
+  }
 
   useEffect(() => {
     if (devices && devices.length > 0) {
@@ -77,13 +131,27 @@ export default function Configurator({ devices, onDemoNodesChange }) {
 
   return (
     <div>
-      <div className="configHeader">
-        <span className="title">Devices</span>
+      <div>
+        <div className="configHeader">
         <input
           type="text"
           className="searchBar"
           placeholder="Ask about the data . . ."
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
         />
+        <button className="addDeviceButton" onClick={handleAISent} disabled={loading}>
+          {loading ? "Thinking . . ." : "Send"}
+        </button>
+        </div>
+
+        {response && (
+        <div className="scrolldownAreaGPT">
+        <div style={{ marginTop: "20px", whiteSpace: "pre-wrap", display: "flex", alignItems: "center", justifyContent: "center"}}>
+          <p>{response}</p>
+        </div>
+        </div>
+        )}
       </div>
 
       <div className="scrolldownArea">
@@ -142,6 +210,7 @@ export default function Configurator({ devices, onDemoNodesChange }) {
           onChange={(e) => setDeviceLocationLon(e.target.value)}
         />
         <button className="addDeviceButton" onClick={addCard}> Add Device </button>
+        <button onClick={() => toggleAlarm()} className="addDeviceButton"> Toggle Alarm</button>
       </div>
     </div>
   );

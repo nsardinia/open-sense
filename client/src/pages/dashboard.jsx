@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
-import { db } from "../firebaseConfig"; // Assuming firebaseConfig is in the root
+import { ref, set, onValue } from "firebase/database";
+import { db } from "../firebaseConfig"; 
 import Heatmap from "../components/heatmap";
 import HamburgerNav from '../components/navbar.jsx';
 import "../styles/styles.css";
@@ -8,7 +8,7 @@ import AlertsPanel from "../components/alertspanel";
 import SensorCard from "../components/sensorcard.jsx";
 import Configurator from "../components/configurator.jsx";
 
-// This is your original dashboard logic
+
 function DashboardPage() {
   const [sensorData, setSensorData] = useState(null);
   const [showConfig, setShowConfig] = useState(false);
@@ -23,7 +23,20 @@ function DashboardPage() {
     return () => unsubscribe();
   }, []);
 
-  
+  // update demoNodes based on firebase data
+  useEffect(() => {
+    if (!sensorData) return;
+
+    setDemoNodes((prev) =>
+      prev.map((node) =>
+        node.id === "marston"
+          ? { ...node, readings: sensorData }
+          : node
+      )
+    );
+  }, [sensorData]);
+
+
   const [demoNodes, setDemoNodes] = useState([
     {
       id: "marston",

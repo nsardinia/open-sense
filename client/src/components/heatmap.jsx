@@ -186,7 +186,7 @@ export default function Heatmap({ sensorData, devices}) {
         popup.remove()
       })
     })
-  }, [sensorData, devices])
+  }, [sensorData])
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>

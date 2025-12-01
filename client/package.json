@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@maptiler/sdk": "^3.8.0",
+    "axios": "^1.13.2",
     "d3": "^7.9.0",
     "firebase": "^12.5.0",
     "lucide-react": "^0.554.0",
