@@ -11,6 +11,7 @@ import Configurator from "../components/configurator.jsx";
 
 function DashboardPage() {
   const [sensorData, setSensorData] = useState(null);
+  const [newNodeDataDemo, setNewNodeDataDemo] = useState(null);
   const [showConfig, setShowConfig] = useState(false);
 
   useEffect(() => {
@@ -22,6 +23,19 @@ function DashboardPage() {
     });
     return () => unsubscribe();
   }, []);
+
+  
+  //Hardcoding to avoid the demo effect
+  useEffect(() => {
+    const latestRef = ref(db, "sensor_readings/New Node/readings");
+    const unsubscribe = onValue(latestRef, (snapshot) => {
+        const val = snapshot.val();
+        console.log("Received data:", val);
+        setNewNodeDataDemo(val);
+    });
+    return () => unsubscribe();
+  }, []);
+
 
   // update demoNodes based on firebase data
   useEffect(() => {
@@ -35,6 +49,18 @@ function DashboardPage() {
       )
     );
   }, [sensorData]);
+
+  useEffect(() => {
+    if (!newNodeDataDemo) return;
+
+    setDemoNodes((prev) =>
+      prev.map((node) =>
+        node.id === "New Node"
+          ? { ...node, readings:  newNodeDataDemo}
+          : node
+      )
+    );
+  }, [newNodeDataDemo]);
 
 
   const [demoNodes, setDemoNodes] = useState([
