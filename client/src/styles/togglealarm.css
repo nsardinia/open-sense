@@ -1,0 +1,51 @@
+/* === Bottom-Right Floating Buttons Wrapper === */
+.floating-controls {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  z-index: 9999;
+}
+
+/* === Shared Button Style (Configurator + Alarm Toggle) === */
+.floating-btn {
+  padding: 12px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+
+  border-radius: 40px;
+  border: 2px solid rgba(16,185,129,0.35);
+  cursor: pointer;
+
+  background: rgba(255,255,255,0.7);
+  color: #064e3b;
+
+  backdrop-filter: blur(12px);
+
+  transition: all .25s ease;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.floating-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(16,185,129,0.35);
+  border-color: rgba(16,185,129,0.55);
+}
+
+/* Alarm ON state */
+.floating-btn.on {
+  background: linear-gradient(135deg, #10b981, #14b8a6);
+  color: white;
+  border: none;
+  box-shadow: 0 12px 30px rgba(16,185,129,0.45);
+}
+
+/* Alarm OFF state */
+.floating-btn.off {
+  background: rgba(255,255,255,0.8);
+  color: #064e3b;
+}

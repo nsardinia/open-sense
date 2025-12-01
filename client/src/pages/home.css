@@ -1,5 +1,20 @@
 /* Landing Page Styles (separate file content) */
 
+/* Ensure the app root and body fill the viewport so 100% / 100vh calculations work reliably */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.hero-section {
+  width: 100vw;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+html, body, #root, #app {
+  height: 100%;
+}
+
   * {
     margin: 0;
     padding: 0;
@@ -10,19 +25,25 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
     background: #ffffff;
     color: #1f2937;
+    min-height: 100%;
   }
 
   .landing-page {
     min-height: 100vh;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     background: #ffffff;
   }
 
   /* Hero Section */
   .hero-section {
     position: relative;
+    min-height: 100vh;
     height: 100vh;
     display: flex;
     align-items: center;
+    justify-content: center; /* center hero content horizontally */
     overflow: hidden;
     background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 50%, #f0f9ff 100%);
   }
@@ -413,3 +434,4 @@
     color: #9ca3af;
     font-size: 0.875rem;
   };
+

@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/home.jsx";
 import DashboardPage from "./pages/dashboard.jsx";
+import ContributePage from "./pages/contribute.jsx";
 // import any other pages to create (like About, Docs, etc.)
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} /> 
       <Route path="/dashboard" element={<DashboardPage />} /> 
+      <Route path="/contribute" element={<ContributePage />} />
 
       <Route path="/about" element={<div>About Page Content</div>} />
       <Route path="/docs" element={<div>Documentation Page Content</div>} />

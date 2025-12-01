@@ -1,13 +1,51 @@
+/* ========================================= */
+/* CONFIGURE BUTTON — TEAL STYLE (BETTER VISIBILITY) */
+/* ========================================= */
+.config-launcher {
+  position: fixed;
+  bottom: 90px; 
+  right: 20px;
+
+  padding: 12px 22px;
+  border-radius: 40px;
+
+  background: linear-gradient(135deg, #10b981, #14b8a6);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+
+  border: none;
+  cursor: pointer;
+
+  box-shadow: 0 12px 25px rgba(16,185,129,0.35);
+  transition: all .25s ease;
+  z-index: 9998;
+}
+
+.config-launcher:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 35px rgba(16,185,129,0.45);
+}
+
+/* ========================================= */
+/* CONFIGURATOR POPUP — SMALLER + CLEANER */
+/* ========================================= */
 .config-window {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 650px;
-  padding: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+
+  width: 80vw;              /* smaller */
+  max-width: 750px;         /* was 900 — reduced */
+  padding: 18px 24px;       /* reduced */
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(16,185,129,0.25);
+
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
   z-index: 9999;
 }
 
@@ -15,142 +53,114 @@
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  backdrop-filter: blur(3px);
   z-index: 9998;
 }
 
-
+/* ========================================= */
+/* HEADER — AI BAR + SEND BUTTON */
+/* ========================================= */
 .configHeader {
   display: flex;
+  gap: 12px;
   align-items: center;
-  width: 100%;
-  padding: 12px 16px;
-  gap: 12px; 
-  background: #f5f5f7;
-  border-bottom: 1px solid #ddd;
-  border-radius: 8px 8px 0 0;
+
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(16,185,129,0.25);
+
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
 }
 
-.title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #333;
-  white-space: nowrap; 
-}
-
-.searchWrapper {
-  flex: 1; 
-}
-
-.searchBar {
-  width: 100%;        
-  padding: 6px 10px;
-  font-size: 0.95rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  outline: none;
-  box-sizing: border-box;
-}
-
-.searchBar:focus {
-  border-color: #999;
-}
-
-.dashboard-toolbar {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
- 
-.dashboard-card {
-  background: linear-gradient(145deg, #1e1e1e, #2c2c2c);
-  color: #ffffff;
-  padding: 20px;
+.aiBar {
+  flex: 1;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-  max-width: 300px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 12px 16px;
+
+  background: rgba(255,255,255,0.85);
+  border: 1px solid rgba(16,185,129,0.35);
+
+  font-size: 1rem;
+  color: #065f46;
 }
 
-.dashboard-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.8);
+.aiBar::placeholder {
+  color: #0f766e;
+  opacity: 0.7;
 }
 
-.react-grid-item.react-grid-placeholder {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+/* AI bar focus */
+.aiBar:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 10px rgba(20,184,166,0.35);
 }
-.scrolldownAreaGPT {
+
+/* ========================================= */
+/* INPUTS — PLACEHOLDER STYLE ONLY */
+/* ========================================= */
+.searchBar {
   width: 100%;
-  height: 100%;      
-  overflow-y: auto; 
-  overflow-x: hidden;          
-  
-  padding: 12px;
-  box-sizing: border-box;
+  padding: 10px 14px;
 
-  background: #fafafa;         
-  border-radius: 0 0 8px 8px; 
-  border: 1px solid #e2e2e2;
-  border-top: none;          
+  border-radius: 12px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(16,185,129,0.3);
 
-  scrollbar-width: thin;    
-  scrollbar-color: #bbb #f0f0f0;
-
-
-  max-height: 100px;
-}
-
-.scrolldownArea {
-  width: 100%;
-  height: 100%;            
-  overflow-y: auto;       
-  overflow-x: hidden;    
-  
-  padding: 12px;
-  box-sizing: border-box;
-
-  background: #fafafa;
-  border-radius: 0 0 8px 8px; 
-  border: 1px solid #e2e2e2;
-  border-top: none;          
-
-  scrollbar-width: thin;     
-  scrollbar-color: #bbb #f0f0f0;
-
-  max-height: 400px;
-}
-
-.addDeviceButton {
-  padding: 6px 10px;
   font-size: 0.95rem;
+  color: #064e3b;
+}
+
+.searchBar::placeholder {
+  color: #0f766e;
+  opacity: 0.75;
+}
+
+/* ========================================= */
+/* DEVICE INPUT ROW — FIXED SPACING */
+/* ========================================= */
+.config-input-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  margin-top: 18px;
+}
+
+/* ========================================= */
+/* BUTTON — ADD DEVICE */
+/* ========================================= */
+.addDeviceButton {
+  padding: 10px 16px;
+  border-radius: 14px;
+
+  background: linear-gradient(135deg, #10b981, #14b8a6);
+  color: white;
+
+  border: none;
+  font-weight: 600;
   cursor: pointer;
-  white-space: nowrap;
+
+  box-shadow: 0 10px 25px rgba(16,185,129,0.35);
+  transition: all .25s ease;
 }
 
 .addDeviceButton:hover {
-  background: #dcdcdc;
+  transform: translateY(-3px);
+  box-shadow: 0 15px 32px rgba(16,185,129,0.5);
 }
 
-.scrolldownArea::-webkit-scrollbar {
-  width: 8px;
-}
+/* ========================================= */
+/* SCROLL AREAS */
+/* ========================================= */
+.scrolldownArea,
+.scrolldownAreaGPT {
+  background: rgba(255,255,255,0.6);
+  border-radius: 14px;
+  padding: 14px;
 
-.scrolldownArea::-webkit-scrollbar-track {
-  background: #f0f0f0;
-  border-radius: 8px;
-}
-
-.scrolldownArea::-webkit-scrollbar-thumb {
-  background: #bbb;
-  border-radius: 8px;
-}
-
-.scrolldownArea::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  border: 1px solid rgba(16,185,129,0.15);
+  max-height: 330px;
+  overflow-y: auto;
 }
