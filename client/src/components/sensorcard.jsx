@@ -1,11 +1,11 @@
 import "../styles/sensorcard.css"
 
-export default function SensorCard({ data }) {
+export default function SensorCard({ name="Live Sensor Node", data }) {
   if (!data) return null
 
   return (
     <div className="sensor-card">
-      <div className="sensor-title">Live Sensor Node</div>
+      <div className="sensor-title">{name}</div>
 
       <div className="sensor-grid">
 

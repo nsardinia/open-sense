@@ -1,50 +1,10 @@
-import React, { useEffect, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import * as maptilersdk from "@maptiler/sdk"
 import "@maptiler/sdk/dist/maptiler-sdk.css"
 import ReactDOM from "react-dom/client"
 import SensorCard from "./sensorcard"
 
 const MAPTILER_KEY = "o1YucdjzVonMBIYtE4G5"
-
-// fake demo nodes (same structure as real ones will use)
-const demoNodes = [
-  {
-    id: "marston",
-    lat: 29.647993,
-    lng: -82.343939,
-    readings: {
-      pm: 120,
-      gas: 900,
-      sound: 78,
-      temp: 83,
-      humidity: 55,
-    },
-  },
-  {
-    id: "dungeon",
-    lat: 29.648378,
-    lng: -82.344561,
-    readings: {
-      pm: 190,
-      gas: 1600,
-      sound: 97,
-      temp: 92,
-      humidity: 72,
-    },
-  },
-  {
-    id: "malachowsky",
-    lat: 29.644067,
-    lng: -82.347768,
-    readings: {
-      pm: 75,
-      gas: 500,
-      sound: 62,
-      temp: 79,
-      humidity: 44,
-    },
-  },
-]
 
 function normalize(value, min, max) {
   if (value == null || isNaN(value)) return 0 // safety check
@@ -69,9 +29,10 @@ function calculateIntensity(readings) {
   )
 }
 
-export default function Heatmap({ sensorData }) {
+export default function Heatmap({ sensorData, devices}) {
   const mapContainer = useRef(null)
   const map = useRef(null)
+
 
   // converting the single real ESP into a node (same format as fake ones)
   const liveNode = sensorData
@@ -90,19 +51,21 @@ export default function Heatmap({ sensorData }) {
     : null
 
   // combining fake + real nodes so they all behave the same
-  const nodes = liveNode ? [...demoNodes, liveNode] : demoNodes
+  const nodes = liveNode ? [...devices, liveNode] : devices 
 
   useEffect(() => {
-    if (map.current) return // prevent reinitialization
+    console.log(devices)
+    if (!map.current) {
 
-    maptilersdk.config.apiKey = MAPTILER_KEY
+      maptilersdk.config.apiKey = MAPTILER_KEY
 
-    map.current = new maptilersdk.Map({
-      container: mapContainer.current,
-      style: maptilersdk.MapStyle.STREETS,
-      center: [-82.3248, 29.6516],
-      zoom: 13,
-    })
+      map.current = new maptilersdk.Map({
+        container: mapContainer.current,
+        style: maptilersdk.MapStyle.STREETS,
+        center: [-82.3248, 29.6516],
+        zoom: 13,
+      })
+    }
 
     // converting nodes into geojson features for maptiler
     const geojson = {
@@ -128,10 +91,14 @@ export default function Heatmap({ sensorData }) {
     }
 
     map.current.on("load", () => {
-      map.current.addSource("heatmap-source", {
-        type: "geojson",
-        data: geojson,
-      })
+    if (map.current.getSource("heatmap-source")) {
+        map.current.getSource("heatmap-source").setData(geojson);
+    } else { 
+        map.current.addSource("heatmap-source", {
+          type: "geojson",
+          data: geojson,
+        })
+
 
       // actual heatmap layer
       map.current.addLayer({
@@ -181,12 +148,15 @@ export default function Heatmap({ sensorData }) {
           "circle-opacity": 0,
         },
       })
+          
+      
+        const popup = new maptilersdk.Popup({
+          closeButton: false,
+          closeOnClick: false,
+        })
 
-      const popup = new maptilersdk.Popup({
-        closeButton: false,
-        closeOnClick: false,
-      })
-
+    
+    
       // when someone hovers on a point, show the card
       map.current.on("mouseenter", "sensor-points", (e) => {
       map.current.getCanvas().style.cursor = "pointer"
@@ -205,12 +175,11 @@ export default function Heatmap({ sensorData }) {
       const container = document.createElement("div")
       const root = ReactDOM.createRoot(container)
 
-      console.log("hover readings:", readings) // debugging
 
       root.render(<SensorCard data={readings} />)
-
       popup.setLngLat(coordinates).setDOMContent(container).addTo(map.current)
     })
+  }
 
       map.current.on("mouseleave", "sensor-points", () => {
         map.current.getCanvas().style.cursor = ""
