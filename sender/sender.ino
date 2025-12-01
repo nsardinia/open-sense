@@ -16,7 +16,7 @@
 #define microphone 33
 #define gas 32
 #define gas_digital 13
-#define buzzer 0
+#define buzzer 21
 #define rx_pin 35
 
 // Singleton instance of the radio driver
@@ -44,6 +44,7 @@ void setup()
   pinMode(RFM95_RST, OUTPUT);
   pinMode(LED, OUTPUT);
   pinMode(gas_digital, INPUT);
+  pinMode(buzzer, OUTPUT);
   digitalWrite(RFM95_RST, HIGH);
   pmSerial.begin(9600);
 
@@ -117,10 +118,10 @@ void loop()
   Serial.print("Noise Level: "); Serial.println(sensor_data.noise);
   sensor_data.gasses = analogRead(gas);
   Serial.print("Gas Present/4095: "); Serial.println(sensor_data.gasses);
-  if (digitalRead(gas_digital) == HIGH){ 
-    digitalWrite(buzzer, HIGH);
-    Serial.println("Buzzing!");
-  }
+  // if (digitalRead(gas_digital) == HIGH){ 
+  //   digitalWrite(buzzer, HIGH);
+  //   Serial.println("Buzzing!");
+  // }
 
   // ******************* Lora Sending ************************
   Serial.println("Sending to rf95_server");
@@ -143,11 +144,18 @@ void loop()
   { 
     // Should be a reply message for us now   
     if (rf95.recv(buf, &len))
-   {
-      Serial.print("Got reply: ");
-      Serial.println((char*)buf);
+   {  bool alarm = (buf[0] == '1');
+      // Serial.print("Got reply: ");
+      // Serial.println((char*)buf);
+      Serial.print("Received alarm: ");
+      Serial.println(alarm ? "true" : "false");
       Serial.print("RSSI: ");
-      Serial.println(rf95.lastRssi(), DEC);    
+      Serial.println(rf95.lastRssi(), DEC);  
+      if (alarm){
+        Serial.println("***ALARM***");
+        digitalWrite(buzzer, HIGH);
+        delay(2000);}
+      else {digitalWrite(buzzer, LOW);}
     }
     else
     {
